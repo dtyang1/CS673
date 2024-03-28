@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Quote Generator</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        #quote-display {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Quote Generator</h1>
+        <button id="new-quote">Get New Quote</button>
+        <div id="quote-display"></div>
+    </div>
+
+    <script>
+        function getJSONPQuote() {
+            const callbackName = 'forismaticCallback_' + new Date().getTime();
+
+            window[callbackName] = function(data) {
+                const quoteText = data.quoteText;
+                const quoteAuthor = data.quoteAuthor || "Unknown";
+                document.getElementById('quote-display').innerHTML = `<p>"${quoteText}"</p><p>- ${quoteAuthor}</p>`;
+
+                document.body.removeChild(document.getElementById(callbackName));
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.id = callbackName;
+            script.src = `https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=jsonp&jsonp=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        let debounceTimeout;
+
+        document.getElementById('new-quote').addEventListener('click', () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(getJSONPQuote, 300);
+        });
+    </script>
+</body>
+</html>
+

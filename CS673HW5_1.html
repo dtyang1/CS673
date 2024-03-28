@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="fetchWeather()">Get Weather</button>
+    <div id="weatherInfo"></div>
+
+    <script>
+        function generateAPIUrl(city) {
+            const apiKey = "1748bd65241d54dda7e6aad135a3c14d"; 
+            return `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+        }
+
+        async function fetchWeather() {
+            const city = document.getElementById("cityInput").value;
+            const url = generateAPIUrl(city);
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const weatherInfo = document.getElementById("weatherInfo");
+                weatherInfo.innerHTML = `
+                    <h2>Weather in ${city}</h2>
+                    <p>Temperature: ${data.main.temp}&deg;C</p>
+                    <p>Feels like: ${data.main.feels_like}&deg;C</p>
+                    <p>Description: ${data.weather[0].description}</p>
+                `;
+            } catch (error) {
+                console.log("Failed to fetch weather data:", error);
+            }
+        }
+    </script>
+</body>
+</html>
+
